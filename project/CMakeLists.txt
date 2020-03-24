@@ -1,0 +1,2 @@
+ADD_SUBDIRECTORY(stress_test)
+ADD_SUBDIRECTORY(tests)
