@@ -9,7 +9,7 @@ void SequenceSearchDynamic::SetUp() {
 
     library = dlopen("./../../libsequence_search_dynamic.so", RTLD_LAZY);
     if (!library) { FAIL(); }
-    *(void **) (&hello_so) = dlsym(library, "hello");  // or reinterpret_cast
+//    *(void **) (&hello_so) = dlsym(library, "hello");  // or reinterpret_cast
 
 }
 

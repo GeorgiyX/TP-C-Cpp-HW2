@@ -1,6 +1,0 @@
-#ifndef TP_C_CPP_HW2_SEQUENCE_SEARCH_H
-#define TP_C_CPP_HW2_SEQUENCE_SEARCH_H
-
-int hello(void);
-
-#endif //TP_C_CPP_HW2_SEQUENCE_SEARCH_H

@@ -2,14 +2,23 @@
 #include "utils.h"
 
 extern "C" {
-#include "sequence_search.h"
+#include "seq_search.h"
+#include "search.h"
 }
 
 
-TEST(BASE_TESTS, STATIC_LIB_TST) {
-    ASSERT_EQ(hello(), 1);
+TEST(SINGLE_THREAD_TEST, IS_SEQUENCE_IN_DATA_0) {
+    char data[20] = "qwertyui";
+    const char *seq = "qriwqeqweqw";
+    ASSERT_EQ(is_sequence_in_data(data, seq), 0);
+}
+
+TEST(SINGLE_THREAD_TEST, IS_SEQUENCE_IN_DATA_1) {
+    char data[20] = "qwertyui";
+    const char *seq = "qri";
+    ASSERT_EQ(is_sequence_in_data(data, seq), 1);
 }
 
 TEST_F(SequenceSearchDynamic, DYNAMIC_LIB_TST) {
-    ASSERT_EQ(hello_so(), 1);
+    ASSERT_EQ(1, 1);
 }

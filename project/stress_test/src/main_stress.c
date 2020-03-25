@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "sequence_search.h"
+#include "seq_search.h"
 
 
 int main() {
@@ -13,9 +13,9 @@ int main() {
         dlclose(library);
         return 1;
     }
-    *(void **) (&hello) = dlsym(library, "hello");
+//    *(void **) (&hello) = dlsym(library, "hello");
 #endif
-    hello();
+//    hello();
 #ifdef _DYNAMIC
     dlclose(library);
 #endif
