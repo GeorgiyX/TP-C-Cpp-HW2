@@ -5,7 +5,7 @@
 #include "search_mt.h"
 #include "search.h"
 
-founded_sequence *search_sequences(char *file_path, size_t sequences_cnt, const char **in_sequences) {
+founded_sequence *search_sequences(const char *file_path, size_t sequences_cnt, const char **in_sequences) {
     if (!file_path || (sequences_cnt && !in_sequences)) {
         return NULL;
     }
