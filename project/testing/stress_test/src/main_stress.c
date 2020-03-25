@@ -17,10 +17,9 @@ int main(int argc, const char **argv) {
 #include <dlfcn.h>
     void *library;
     founded_sequence *(*search_sequences)(const char *, size_t , const char **);
-    library = dlopen("./../../libsequence_search_dynamic.so", RTLD_LAZY); //path
+    library = dlopen("./../../../libsequence_search_dynamic.so", RTLD_LAZY);
     if (!library) {
-        printf("can't load lib in str_tst");
-        dlclose(library);
+        printf("can't load lib in stress_tst");
         return 1;
     }
     *(void **) (&search_sequences) = dlsym(library, "search_sequences");
