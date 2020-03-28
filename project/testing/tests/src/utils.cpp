@@ -6,7 +6,7 @@
 void MULTI_THREAD_TEST::SetUp() {
     Test::SetUp();
 
-    library = dlopen("./../../../libsequence_search_dynamic.so", RTLD_LAZY);
+    library = dlopen(TestAssist::libPath.c_str(), RTLD_LAZY);
     if (!library) { FAIL(); }
     *(void **) (&search_sequences_mt) = dlsym(library, "search_sequences");
     *(void **) (&free_founded_sequence_mt) = dlsym(library, "free_founded_sequence");
@@ -21,13 +21,15 @@ void MULTI_THREAD_TEST::TearDown() {
     dlclose(library);
 }
 
-void TestAssist::setTestCases(fs::path dir) {
+void TestAssist::setTestCases(std::experimental::filesystem::path dir) {
     for (auto &fileName : fs::directory_iterator(dir / "TASKS")) {
+        std::cout << "add file: " << fileName.path();
         std::ifstream file(fileName.path());
         if (!file)
             throw "can't open file";
         TestCase testCase = {};
         std::getline(file, testCase.dataPath);
+        testCase.dataPath = dir.string() + "CASES/" + testCase.dataPath;
 
         std::string task;
         std::getline(file, task);
@@ -36,7 +38,8 @@ void TestAssist::setTestCases(fs::path dir) {
         std::string answer;
         std::getline(file, answer);
         std::istringstream iss(answer);
-        std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(testCase.answer));
+        std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+                  std::back_inserter(testCase.answer));
 
         TestAssist::testCases.push_back(testCase);
     }
@@ -46,13 +49,15 @@ void TestAssist::getArray(std::string &string, const char ***ptr, size_t *cnt) {
     if (!ptr || !cnt)
         throw "wrong arg";
     std::istringstream iss(string);
-
     std::vector<std::string> sequencesVec;
-    std::vector<const char *> cstrVec;
-    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(sequencesVec));
+    std::vector<const char *> cStrVec;
+    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+              std::back_inserter(sequencesVec));
     for (std::string &sequence : sequencesVec) {
         (*cnt)++;
-        cstrVec.emplace_back(sequence.c_str());
+        cStrVec.emplace_back(sequence.c_str());
     }
-    *ptr = cstrVec.data();
+    *ptr = cStrVec.data();
 }
+std::string TestAssist::libPath;
+std::vector<TestCase> TestAssist::testCases;

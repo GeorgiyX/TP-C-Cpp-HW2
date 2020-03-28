@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include "seq_search.h"
 #include "search.h"
+#include "search_st.h"
 
-founded_sequence *search_sequences(const char *file_path, size_t sequences_cnt, const char **in_sequences) {
+const char **search_sequences(const char *file_path, size_t sequences_cnt, const char **in_sequences) {
     if (!file_path || (sequences_cnt && !in_sequences)) {
         return NULL;
     }
@@ -14,25 +13,31 @@ founded_sequence *search_sequences(const char *file_path, size_t sequences_cnt, 
         return NULL;
     }
 
-    founded_sequence *result = calloc(1, sizeof(founded_sequence));
-    if (!result) {
-        return NULL;
-    }
-
-    founded_sequence *prev_node = result;
-    for (int cur_sequence = 0; cur_sequence < sequences_cnt; ++cur_sequence) {
-        if (is_sequence_in_data(data, in_sequences[cur_sequence])) {
-            founded_sequence *new_node = calloc(1 , sizeof(founded_sequence));
+    founded_sequence *first_node = NULL;
+    founded_sequence *prev_node = first_node;
+    for (int task_index = 0; task_index < sequences_cnt; ++task_index) {
+        if (is_sequence_in_data(data, in_sequences[task_index])) {
+            founded_sequence *new_node = calloc(1, sizeof(founded_sequence));
             if (!new_node) {
-                free_founded_sequence(result);
-                result = NULL;
+                free_founded_sequence(first_node);
+                first_node = NULL;
                 break;
             }
-            new_node->sequence = in_sequences[cur_sequence];
-            prev_node->next = new_node;
+            if (!first_node) {
+                first_node = new_node;
+            } else {
+                prev_node->next = new_node;
+            }
+            new_node->sequence = in_sequences[task_index];
             prev_node = new_node;
         }
     }
+    free(data);
+    const char **result;
+    size_t result_cnt = 0;
+    if (get_array_from_list(first_node, &result, &result_cnt)) {
+        result = NULL;
+    }
+    free_founded_sequence(first_node);
     return result;
 }
-

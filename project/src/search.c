@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "seq_search.h"
+#include "search.h"
 
 void free_founded_sequence(founded_sequence *node_to_remove) {
     if (!node_to_remove) {

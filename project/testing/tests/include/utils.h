@@ -21,7 +21,7 @@ protected:
     void SetUp() override;
     void TearDown() override;
 
-    founded_sequence *(*search_sequences_mt)(const char *, size_t , const char **);
+    const char **(*search_sequences_mt)(const char *, size_t , const char **);
     void *(*free_founded_sequence_mt)(founded_sequence *);
     void *(*thread_routine_mt)(void *);
     void *(*get_mmap_data_mt)(const char *, char **);
@@ -39,6 +39,7 @@ struct TestCase {
 };
 
 struct TestAssist {
+    static std::string libPath;
     static std::vector<TestCase> testCases;
     static void setTestCases(fs::path dir);
     static void getArray(std::string &string, const char ***ptr, size_t *cnt);

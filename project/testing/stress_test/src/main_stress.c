@@ -16,7 +16,7 @@ int main(int argc, const char **argv) {
 #ifdef _DYNAMIC
 #include <dlfcn.h>
     void *library;
-    founded_sequence *(*search_sequences)(const char *, size_t , const char **);
+    const char **(*search_sequences)(const char *, size_t , const char **);
     library = dlopen("./../../../libsequence_search_dynamic.so", RTLD_LAZY);
     if (!library) {
         printf("can't load lib in stress_tst");
@@ -25,7 +25,7 @@ int main(int argc, const char **argv) {
     *(void **) (&search_sequences) = dlsym(library, "search_sequences");
 #endif
     time_t start = time(0);
-    founded_sequence * result = search_sequences(argv[1], seq_cnt, &argv[3]);
+    const char **result = search_sequences(argv[1], seq_cnt, &argv[3]);
     if (!result) {
 #ifdef _DYNAMIC
         dlclose(library);
