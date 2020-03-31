@@ -19,6 +19,9 @@ void free_founded_sequence(founded_sequence *node_to_remove) {
 
 
 int is_sequence_in_data(char *data, const char *sequence) {
+    if (!data || !sequence) {
+        return 0;
+    }
     int result = 1;
     while (*sequence) {
         const char ch[2] = { *sequence++, '\0'};
@@ -30,8 +33,8 @@ int is_sequence_in_data(char *data, const char *sequence) {
     return result;
 }
 
-int get_mmap_data(const char *path, char **data) {
-    if (!path || !data) {
+int get_mmap_data(const char *path, char **data, size_t *file_size) {
+    if (!path || !data || !file_size) {
         return -1;
     }
 
@@ -46,9 +49,20 @@ int get_mmap_data(const char *path, char **data) {
     }
 
     *data = NULL;
+    *file_size = stat_buffer.st_size;
     *data = (char *) mmap(NULL, stat_buffer.st_size, PROT_READ, MAP_SHARED, file_desc, 0);
     if (*data == MAP_FAILED) {
         return -1;
     }
+    
     return close(file_desc);
+}
+
+
+void free_sequences_vector(sequences_vector *vector) {
+    if (!vector) {
+        return;
+    }
+    free(vector->sequence_vector);
+    free(vector);
 }

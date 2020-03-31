@@ -11,7 +11,7 @@ struct founded_sequence {
 };
 
 
-int get_mmap_data(const char *path, char **data);
+int get_mmap_data(const char *path, char **data, size_t *file_size);
 int is_sequence_in_data(char *data, const char *sequence);
 void free_founded_sequence(founded_sequence *node);
 

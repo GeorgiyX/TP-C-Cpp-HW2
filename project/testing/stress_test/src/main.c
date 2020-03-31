@@ -19,7 +19,7 @@ int main(int argc, const char **argv) {
     const char **(*search_sequences)(const char *, size_t , const char **);
     library = dlopen("./../../../libsequence_search_dynamic.so", RTLD_LAZY);
     if (!library) {
-        printf("can't load lib in stress_tst");
+        printf("can't load lib in stress test");
         return 1;
     }
     *(void **) (&search_sequences) = dlsym(library, "search_sequences");

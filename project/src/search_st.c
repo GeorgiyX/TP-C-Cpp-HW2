@@ -1,26 +1,32 @@
 #include <stdlib.h>
 #include "search_st.h"
 
-int get_array_from_list(founded_sequence *list, const char ***array, size_t *cnt) {
-    if (!list || !array || !cnt) {
-        return -1;
+sequences_vector *get_vector_from_list(founded_sequence *list) {
+    if (!list) {
+        return NULL;
     }
+
+    sequences_vector *vector = NULL;
+    if (!(vector = calloc(1, sizeof(sequences_vector)))) {
+        return NULL;
+    }
+
     founded_sequence *next = list;
-    *cnt = 0;
     while (next) {
-        (*cnt)++;
+        vector->sequence_count++;
         next = next->next;
     }
-    *array = NULL;
-    *array = calloc(*cnt, sizeof(const char *));
-    if (!*array) {
-        return -1;
+
+    if (!(vector->sequence_vector = calloc(vector->sequence_count, sizeof(const char *)))) {
+        free(vector);
+        return NULL;
     }
+
     next = list;
     size_t array_index = 0;
     while (next) {
-        *array[array_index] = next->sequence;
+        vector->sequence_vector[array_index++] = next->sequence;
         next = next->next;
     }
-    return 0;
+    return vector;
 }

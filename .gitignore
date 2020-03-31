@@ -3,4 +3,5 @@
 .DS_Store
 /project/build/
 /build*
+project/testing/data/BIG_DATA/*
 

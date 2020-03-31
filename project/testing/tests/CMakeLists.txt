@@ -8,13 +8,13 @@ INCLUDE_DIRECTORIES("${GTEST_INCLUDE_DIRS}")
 
 FIND_PACKAGE(Threads REQUIRED)
 INCLUDE_DIRECTORIES(include ../../include) #s end!!
-ADD_EXECUTABLE(test src/main_tests.cpp src/base_tests.cpp include/utils.h src/utils.cpp src/mt_tests.cpp) #s end!!
+ADD_EXECUTABLE(test src/main.cpp src/st_tests.cpp src/utils.cpp src/mt_tests.cpp) #s end!!
 
 TARGET_LINK_LIBRARIES(test ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} sequence_search_static dl stdc++fs)
 ENABLE_TESTING()
-ADD_TEST(
-        NAME MULTI_THREAD_TEST
-        COMMAND . ${CMAKE_SOURCE_DIR}/..
-)
+#ADD_TEST(
+#        NAME MULTI_THREAD_TEST
+#        COMMAND . ${CMAKE_SOURCE_DIR}/..
+#)
 
 #ADD_SUBDIRECTORY(tests)

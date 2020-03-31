@@ -18,9 +18,7 @@ typedef struct node_mutex {
 
 extern node_mutex prev_node_mutex;
 
-
 void *thread_routine(void *data);
-int get_array_from_list(founded_sequence *list, const char ***array, size_t *cnt, const char **task_array,
-                        size_t task_cnt);
+sequences_vector *get_vector_from_list(founded_sequence *list, const char **task_array, size_t task_cnt);
 
 #endif //TP_C_CPP_HW2_SEARCH_MT_H

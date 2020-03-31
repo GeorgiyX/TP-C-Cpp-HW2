@@ -1,6 +1,8 @@
 #include "utils.h"
 #include <dlfcn.h>
 #include <fstream>
+#include <utils.h>
+#include <cstring>
 
 
 void MULTI_THREAD_TEST::SetUp() {
@@ -13,7 +15,8 @@ void MULTI_THREAD_TEST::SetUp() {
     *(void **) (&is_sequence_in_data_mt) = dlsym(library, "is_sequence_in_data");
     *(void **) (&thread_routine_mt) = dlsym(library, "thread_routine");
     *(void **) (&get_mmap_data_mt) = dlsym(library, "get_mmap_data");
-    *(void **) (&get_true_order_mt) = dlsym(library, "get_true_order");
+    *(void **) (&get_vector_from_list_mt) = dlsym(library, "get_vector_from_list");
+    *(void **) (&prev_node_mutex) = dlsym(library, "prev_node_mutex");
 }
 
 void MULTI_THREAD_TEST::TearDown() {
@@ -22,18 +25,75 @@ void MULTI_THREAD_TEST::TearDown() {
 }
 
 void TestAssist::setTestCases(std::experimental::filesystem::path dir) {
-    for (auto &fileName : fs::directory_iterator(dir / "TASKS")) {
-        std::cout << "add file: " << fileName.path();
+    TestAssist::setCasesMain(dir);
+    TestAssist::setCasesListToArr(dir);
+}
+
+sequences_vector TestAssist::getSeqVector(std::string &string) {
+    sequences_vector vector = {};
+    std::istringstream iss(string);
+    std::vector<std::string> strVec;
+    std::vector<const char *> cStrVec;
+    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+              std::back_inserter(strVec));
+    for (std::string &sequence : strVec) {
+        vector.sequence_count++;
+        auto cStr = new char[sequence.length() + 1];
+        std::memcpy(cStr, sequence.c_str(), sequence.length() + 1);
+        cStrVec.push_back(cStr);
+    }
+    vector.sequence_vector = new const char*[cStrVec.size()];
+    std::copy(cStrVec.begin(), cStrVec.end(), vector.sequence_vector);
+    return vector;
+}
+
+void TestAssist::setCasesListToArr(fs::path dir) {
+    for (auto &fileName : fs::directory_iterator(dir / "TASK_LIST_TO_ARR")) {
+        std::cout << "add file: " << fileName.path() << std::endl;
         std::ifstream file(fileName.path());
         if (!file)
             throw "can't open file";
-        TestCase testCase = {};
+        TestCaseListToArr testCase = {};
+
+        std::string sequence;
+        std::getline(file, sequence);
+
+        testCase.vecForOrder = getSeqVector(sequence);
+
+        auto prevNode = testCase.list;
+        for (size_t sequenceIndex = 0; sequenceIndex < testCase.vecForOrder.sequence_count; ++sequenceIndex) {
+            auto newNode = new founded_sequence {};
+            newNode->sequence = testCase.vecForOrder.sequence_vector[sequenceIndex];
+            std::cout << "newNode->sequence: " << newNode->sequence << " index: " << sequenceIndex << std::endl;
+            if (!testCase.list) {
+                testCase.list = newNode;
+            } else {
+                prevNode->next = newNode;
+            }
+            prevNode = newNode;
+        }
+
+        std::istringstream iss(sequence);
+        std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
+                  std::back_inserter(testCase.answer));
+
+        TestAssist::casesListToArr.push_back(testCase);
+    }
+}
+
+void TestAssist::setCasesMain(fs::path dir) {
+    for (auto &fileName : fs::directory_iterator(dir / "TASKS")) {
+        std::cout << "add file: " << fileName.path() << std::endl;
+        std::ifstream file(fileName.path());
+        if (!file)
+            throw "can't open file";
+        TestCaseMain testCase = {};
         std::getline(file, testCase.dataPath);
-        testCase.dataPath = dir.string() + "CASES/" + testCase.dataPath;
+        testCase.dataPath = dir.string() + "BIG_DATA/" + testCase.dataPath;
 
         std::string task;
         std::getline(file, task);
-        getArray(task, &testCase.task, &testCase.taskCount);
+        testCase.task = getSeqVector(task);
 
         std::string answer;
         std::getline(file, answer);
@@ -41,23 +101,40 @@ void TestAssist::setTestCases(std::experimental::filesystem::path dir) {
         std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
                   std::back_inserter(testCase.answer));
 
-        TestAssist::testCases.push_back(testCase);
+        TestAssist::casesMain.push_back(testCase);
     }
 }
 
-void TestAssist::getArray(std::string &string, const char ***ptr, size_t *cnt) {
-    if (!ptr || !cnt)
-        throw "wrong arg";
-    std::istringstream iss(string);
-    std::vector<std::string> sequencesVec;
-    std::vector<const char *> cStrVec;
-    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(),
-              std::back_inserter(sequencesVec));
-    for (std::string &sequence : sequencesVec) {
-        (*cnt)++;
-        cStrVec.emplace_back(sequence.c_str());
+founded_sequence * TestAssist::shakeList(founded_sequence *list) {
+    auto current = list;
+    auto last = list;
+    founded_sequence * prev = nullptr;
+    while (current) {
+        auto next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
     }
-    *ptr = cStrVec.data();
+    last->next = nullptr;
+    return prev;
 }
+
 std::string TestAssist::libPath;
-std::vector<TestCase> TestAssist::testCases;
+std::vector<TestCaseMain> TestAssist::casesMain;
+std::vector<TestCaseListToArr> TestAssist::casesListToArr;
+
+bool operator==(sequences_vector &predictAnswer, std::vector<std::string> &trueAnswer) {
+    if (predictAnswer.sequence_count != trueAnswer.size()) {
+        std::cout << "!= cnt:: l: " << predictAnswer.sequence_count << " r: " << trueAnswer.size() << std::endl;
+        return false;
+    }
+    bool result = true;
+    for (size_t answerIndex = 0; answerIndex < trueAnswer.size(); ++answerIndex) {
+        if (std::string(predictAnswer.sequence_vector[answerIndex]) != trueAnswer[answerIndex]) {
+            std::cout << "l: " << std::string(predictAnswer.sequence_vector[answerIndex]) << " r: " << trueAnswer[answerIndex] << std::endl;
+            result = false;
+            break;
+        }
+    }
+    return result;
+}
