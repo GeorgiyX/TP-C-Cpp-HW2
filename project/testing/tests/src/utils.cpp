@@ -124,6 +124,8 @@ std::vector<TestCaseMain> TestAssist::casesMain;
 std::vector<TestCaseListToArr> TestAssist::casesListToArr;
 
 bool operator==(sequences_vector &predictAnswer, std::vector<std::string> &trueAnswer) {
+
+
     if (predictAnswer.sequence_count != trueAnswer.size()) {
         std::cout << "!= cnt:: l: " << predictAnswer.sequence_count << " r: " << trueAnswer.size() << std::endl;
         return false;

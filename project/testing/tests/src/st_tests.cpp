@@ -51,7 +51,6 @@ TEST(BASE_TEST, SEARCH_SEQUENCE) {
                                                     testCase.task.sequence_vector);
         std::unique_ptr<sequences_vector, decltype(&free_sequences_vector)> vector_uniq(vector, &free_sequences_vector);
         if (!vector) { FAIL(); }
-        std::cout << "SEARCH_SEQUENCE: " << testCase.dataPath << std::endl;
         ASSERT_TRUE(*vector == testCase.answer);
     }
 }

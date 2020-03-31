@@ -1,25 +1,32 @@
 #include <stdlib.h>
+#include <assert.h>
+#include "stdio.h"
 #include "search_mt.h"
 
 node_mutex prev_node_mutex = {NULL, NULL, PTHREAD_MUTEX_INITIALIZER};
 
 void *thread_routine(void *data) {
     thread_data *args = (thread_data *) data;
+    printf("Thread data: \n\tptr args: [%lu]\n\targs->sequence: [%s]\n\targs->sequence: [%lu]\n",args, args->sequence, &args->sequence);
     if (is_sequence_in_data(args->data, args->sequence)) {
+        printf("\tthread found sequence!: sequence: [%s]\n",args->sequence);
         founded_sequence *new_node = calloc(1, sizeof(founded_sequence));
         if (!new_node) {
             return (void *) -1;
         }
 
         new_node->sequence = args->sequence;
+
         int errflag = pthread_mutex_lock(&prev_node_mutex.mutex);
         if (errflag) {
             free(new_node);
             return (void *) -1;
         }
         if (!prev_node_mutex.first_node) {
+            printf("\tAttach to ROOT: [%s]\n",args->sequence);
             prev_node_mutex.first_node = new_node;
         } else {
+            printf("\tAttach to PREV: [%s]\n",args->sequence);
             prev_node_mutex.prev_node->next = new_node;
         }
         prev_node_mutex.prev_node = new_node;
@@ -65,6 +72,7 @@ sequences_vector *get_vector_from_list(founded_sequence *list, const char **task
 
         if (node) {
             vector->sequence_vector[new_index++] = node->sequence;
+            assert(*node->sequence);
         }
     }
     return vector;
