@@ -10,13 +10,14 @@ void MULTI_THREAD_TEST::SetUp() {
 
     library = dlopen(TestAssist::libPath.c_str(), RTLD_LAZY);
     if (!library) { FAIL(); }
-    *(void **) (&search_sequences_mt) = dlsym(library, "search_sequences");
-    *(void **) (&free_founded_sequence_mt) = dlsym(library, "free_founded_sequence");
-    *(void **) (&is_sequence_in_data_mt) = dlsym(library, "is_sequence_in_data");
-    *(void **) (&thread_routine_mt) = dlsym(library, "thread_routine");
-    *(void **) (&get_mmap_data_mt) = dlsym(library, "get_mmap_data");
-    *(void **) (&get_vector_from_list_mt) = dlsym(library, "get_vector_from_list");
-    *(void **) (&prev_node_mutex) = dlsym(library, "prev_node_mutex");
+    getFooPtr(library, search_sequences_mt, "search_sequences");
+    getFooPtr(library, free_founded_sequence_mt, "free_founded_sequence");
+    getFooPtr(library, is_sequence_in_data_mt, "is_sequence_in_data");
+    getFooPtr(library, thread_routine_mt, "thread_routine");
+    getFooPtr(library, get_mmap_data_mt, "get_mmap_data");
+    getFooPtr(library, get_vector_from_list_mt, "get_vector_from_list");
+    getFooPtr(library, prev_node_mutex, "prev_node_mutex");
+
 }
 
 void MULTI_THREAD_TEST::TearDown() {
@@ -47,7 +48,7 @@ sequences_vector TestAssist::getSeqVector(std::string &string) {
     return vector;
 }
 
-void TestAssist::setCasesListToArr(fs::path dir) {
+void TestAssist::setCasesListToArr(fs::path &dir) {
     for (auto &fileName : fs::directory_iterator(dir / "TASK_LIST_TO_ARR")) {
         std::cout << "add file: " << fileName.path() << std::endl;
         std::ifstream file(fileName.path());
@@ -81,7 +82,7 @@ void TestAssist::setCasesListToArr(fs::path dir) {
     }
 }
 
-void TestAssist::setCasesMain(fs::path dir) {
+void TestAssist::setCasesMain(fs::path &dir) {
     for (auto &fileName : fs::directory_iterator(dir / "TASKS")) {
         std::cout << "add file: " << fileName.path() << std::endl;
         std::ifstream file(fileName.path());
@@ -124,8 +125,6 @@ std::vector<TestCaseMain> TestAssist::casesMain;
 std::vector<TestCaseListToArr> TestAssist::casesListToArr;
 
 bool operator==(sequences_vector &predictAnswer, std::vector<std::string> &trueAnswer) {
-
-
     if (predictAnswer.sequence_count != trueAnswer.size()) {
         std::cout << "!= cnt:: l: " << predictAnswer.sequence_count << " r: " << trueAnswer.size() << std::endl;
         return false;

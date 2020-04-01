@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 #include <experimental/filesystem>
+#include <dlfcn.h>
 
 extern "C" {
 #include "seq_search.h"
@@ -20,6 +21,16 @@ class MULTI_THREAD_TEST : public ::testing::Test {
 protected:
     void SetUp() override;
     void TearDown() override;
+    template <class T>
+    void getFooPtr(void *&lib, T &fooPtr, const char *fooName) {
+        *(void **) (&fooPtr) = dlsym(lib, fooName);
+        auto error = dlerror();
+        if (error) {
+            std::cout << error;
+            throw error;
+        }
+    }
+
 
     sequences_vector *(*search_sequences_mt)(const char *, size_t , const char **in_sequences);
     void *(*free_founded_sequence_mt)(founded_sequence *);
@@ -51,8 +62,8 @@ struct TestAssist {
     static std::vector<TestCaseMain> casesMain;
     static std::vector<TestCaseListToArr> casesListToArr;
     static founded_sequence *shakeList(founded_sequence *list);
-    static void setCasesListToArr(fs::path dir);
-    static void setCasesMain(fs::path dir);
+    static void setCasesListToArr(fs::path &dir);
+    static void setCasesMain(fs::path &dir);
     static void setTestCases(fs::path dir);
     static sequences_vector getSeqVector(std::string &string);
 };

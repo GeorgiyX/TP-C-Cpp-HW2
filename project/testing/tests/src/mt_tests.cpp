@@ -80,25 +80,6 @@ TEST_F(MULTI_THREAD_TEST, SEARCH_SEQUENCE) {
                                        testCase.task.sequence_vector);
         std::unique_ptr<sequences_vector, decltype(&free_sequences_vector)> vector_uniq(vector, &free_sequences_vector);
         if (!vector) { FAIL(); }
-
-        std::cout << "SEARCH_SEQUENCE: " << testCase.dataPath << "\n\tl size:" << vector->sequence_count << "\n\tr size:" << testCase.answer.size() << std::endl;
-
-        std::cout << "TASK content:" << std::endl;
-        for (size_t i = 0; i < testCase.task.sequence_count; ++i) {
-            std::cout << "\t" << i << ": " << testCase.task.sequence_vector[i] << std::endl;
-        }
-
-        std::cout << "l content:" << std::endl;
-        for (size_t i = 0; i < vector->sequence_count; ++i) {
-            std::cout << "\t" << i << ": " << vector->sequence_vector[i] << std::endl;
-        }
-
-        std::cout << "r content:" << std::endl;
-        for (size_t i = 0; i < testCase.answer.size(); ++i) {
-            std::cout << "\t" << i << ": " << testCase.answer[i] << std::endl;
-        }
-
-        std::cout << "=========END OF TASK=========\n";
         ASSERT_TRUE(*vector == testCase.answer);
     }
 }
