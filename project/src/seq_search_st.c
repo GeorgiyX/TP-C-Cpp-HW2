@@ -17,7 +17,7 @@ sequences_vector *search_sequences(const char *file_path, size_t sequences_cnt, 
 
     founded_sequence *first_node = NULL;
     founded_sequence *prev_node = first_node;
-    for (int task_index = 0; task_index < sequences_cnt; ++task_index) {
+    for (size_t task_index = 0; task_index < sequences_cnt; ++task_index) {
         if (is_sequence_in_data(data, in_sequences[task_index])) {
             founded_sequence *new_node = calloc(1, sizeof(founded_sequence));
             if (!new_node) {

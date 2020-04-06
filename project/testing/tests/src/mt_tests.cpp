@@ -48,7 +48,7 @@ TEST_F(MULTI_THREAD_TEST, THREAD_ROUTINE) {
 TEST_F(MULTI_THREAD_TEST, GET_MMAP_DATA_YES) {
     size_t file_size = 0;
     char *ptr = nullptr;
-    get_mmap_data_mt(TestAssist::casesMain[0].dataPath.c_str(), &ptr, &file_size);
+    get_mmap_data_mt(testAssist.casesMain[0].dataPath.c_str(), &ptr, &file_size);
     std::function<void(char *)> munmaper = [file_size](char *data) { munmap(data, file_size); };
     std::unique_ptr<char, decltype(munmaper)> data(ptr, munmaper);
     ASSERT_FALSE(!ptr);
@@ -64,21 +64,21 @@ TEST_F(MULTI_THREAD_TEST, GET_MMAP_DATA_NO) {
 }
 
 TEST_F(MULTI_THREAD_TEST, GET_ARRAY_FROM_LIST) {
-    TestAssist::casesListToArr[0].list = TestAssist::shakeList(TestAssist::casesListToArr[0].list);
-    auto vector = get_vector_from_list_mt(TestAssist::casesListToArr[0].list,
-                                          TestAssist::casesListToArr[0].vecForOrder.sequence_vector,
-                                          TestAssist::casesListToArr[0].vecForOrder.sequence_count);
-    TestAssist::casesListToArr[0].list = TestAssist::shakeList(TestAssist::casesListToArr[0].list);
-    std::unique_ptr<sequences_vector, decltype(&std::free)> vector_uniq(vector, &std::free);
+    testAssist.casesListToArr[0].list = TestAssist::shakeList(testAssist.casesListToArr[0].list);
+    auto vector = get_vector_from_list_mt(testAssist.casesListToArr[0].list,
+                                          testAssist.casesListToArr[0].vecForOrder.sequence_vector,
+                                          testAssist.casesListToArr[0].vecForOrder.sequence_count);
+    testAssist.casesListToArr[0].list = TestAssist::shakeList(testAssist.casesListToArr[0].list);
+    std::unique_ptr<sequences_vector, decltype(free_sequences_vector_mt)> vector_uniq(vector, free_sequences_vector_mt);
     if (!vector) { FAIL(); }
-    ASSERT_TRUE(*vector == TestAssist::casesListToArr[0].answer);
+    ASSERT_TRUE(*vector == testAssist.casesListToArr[0].answer);
 }
 
 TEST_F(MULTI_THREAD_TEST, SEARCH_SEQUENCE) {
-    for (auto &testCase : TestAssist::casesMain) {
+    for (auto &testCase : testAssist.casesMain) {
         auto vector = search_sequences_mt(testCase.dataPath.c_str(), testCase.task.sequence_count,
                                        testCase.task.sequence_vector);
-        std::unique_ptr<sequences_vector, decltype(&free_sequences_vector)> vector_uniq(vector, &free_sequences_vector);
+        std::unique_ptr<sequences_vector, decltype(free_sequences_vector_mt)> vector_uniq(vector, free_sequences_vector_mt);
         if (!vector) { FAIL(); }
         ASSERT_TRUE(*vector == testCase.answer);
     }

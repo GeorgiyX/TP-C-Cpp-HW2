@@ -23,7 +23,7 @@ TEST(SINGLE_THREAD_TEST, IS_SEQUENCE_IN_DATA_YES) {
 TEST(SINGLE_THREAD_TEST, GET_MMAP_DATA_YES) {
     size_t file_size = 0;
     char *ptr = nullptr;
-    get_mmap_data(TestAssist::casesMain[0].dataPath.c_str(), &ptr, &file_size);
+    get_mmap_data(testAssist.casesMain[0].dataPath.c_str(), &ptr, &file_size);
     std::function<void(char *)> munmaper = [file_size](char *data) { munmap(data, file_size); };
     std::unique_ptr<char, decltype(munmaper)> data(ptr, munmaper);
     ASSERT_FALSE(!ptr);
@@ -39,14 +39,14 @@ TEST(SINGLE_THREAD_TEST, GET_MMAP_DATA_NO) {
 }
 
 TEST(SINGLE_THREAD_TEST, GET_ARRAY_FROM_LIST) {
-    auto vector = get_vector_from_list(TestAssist::casesListToArr[0].list);
-    std::unique_ptr<sequences_vector, decltype(&std::free)> vector_uniq(vector, &std::free);
+    auto vector = get_vector_from_list(testAssist.casesListToArr[0].list);
+    std::unique_ptr<sequences_vector, decltype(&free_sequences_vector)> vector_uniq(vector, &free_sequences_vector);
     if (!vector) { FAIL(); }
-    ASSERT_TRUE(*vector == TestAssist::casesListToArr[0].answer);
+    ASSERT_TRUE(*vector == testAssist.casesListToArr[0].answer);
 }
 
 TEST(SINGLE_THREAD_TEST, SEARCH_SEQUENCE) {
-    for (auto &testCase : TestAssist::casesMain) {
+    for (auto &testCase : testAssist.casesMain) {
         auto vector = search_sequences(testCase.dataPath.c_str(), testCase.task.sequence_count,
                                                     testCase.task.sequence_vector);
         std::unique_ptr<sequences_vector, decltype(&free_sequences_vector)> vector_uniq(vector, &free_sequences_vector);

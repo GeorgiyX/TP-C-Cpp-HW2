@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 #include "seq_search.h"
 #include "utils.h"
 #define OUT_FILE_ST "time-st.txt"
@@ -8,33 +9,42 @@
 
 
 int main(int argc, const char **argv) {
-    if (argc < 3) {
+    if (argc < 5) {
         return -1;
     }
-    int seq_cnt = atoi(argv[2]);
+    int seq_cnt = atoi(argv[3]);
 
 #ifdef _DYNAMIC
 #include <dlfcn.h>
     void *library;
-    const char **(*search_sequences)(const char *, size_t , const char **);
-    library = dlopen("./../../../libsequence_search_dynamic.so", RTLD_LAZY);
+    sequences_vector *(*search_sequences)(const char *, size_t , const char **in_sequences);
+    void (*free_sequences_vector)(sequences_vector *vector);
+    library = dlopen(argv[1], RTLD_LAZY);
     if (!library) {
         printf("can't load lib in stress test");
         return 1;
     }
     *(void **) (&search_sequences) = dlsym(library, "search_sequences");
+    *(void **) (&free_sequences_vector) = dlsym(library, "free_sequences_vector");
+    if (!search_sequences || !free_sequences_vector) {
+        dlclose(library);
+        return -1;
+    }
 #endif
-    time_t start = time(0);
-    const char **result = search_sequences(argv[1], seq_cnt, &argv[3]);
+
+    double start = omp_get_wtime();
+    sequences_vector *result = search_sequences(argv[2], seq_cnt, &argv[4]);
+
     if (!result) {
 #ifdef _DYNAMIC
         dlclose(library);
 #endif
         return -1;
     }
-    time_t end = time(0);
-    double time_in_seconds = difftime(end, start);
+    double end = omp_get_wtime();
+    double time_in_seconds = end - start;
 
+    free_sequences_vector(result);
     int ret_code = 0;
 #ifdef _DYNAMIC
     ret_code = write_to_file(OUT_FILE_MT, time_in_seconds);

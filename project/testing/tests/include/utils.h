@@ -22,7 +22,7 @@ protected:
     void SetUp() override;
     void TearDown() override;
     template <class T>
-    void getFooPtr(void *&lib, T &fooPtr, const char *fooName) {
+    void getCodePtr(void *&lib, T &fooPtr, const char *fooName) {
         *(void **) (&fooPtr) = dlsym(lib, fooName);
         auto error = dlerror();
         if (error) {
@@ -31,9 +31,9 @@ protected:
         }
     }
 
-
     sequences_vector *(*search_sequences_mt)(const char *, size_t , const char **in_sequences);
     void *(*free_founded_sequence_mt)(founded_sequence *);
+    void (*free_sequences_vector_mt)(sequences_vector *vector);
     void *(*thread_routine_mt)(void *);
     void *(*get_mmap_data_mt)(const char *, char **, size_t*);
     int (*is_sequence_in_data_mt)(char *, const char *);
@@ -58,14 +58,16 @@ struct TestCaseListToArr {
 bool operator==(sequences_vector &predictAnswer, std::vector<std::string> &trueAnswer);
 
 struct TestAssist {
-    static std::string libPath;
-    static std::vector<TestCaseMain> casesMain;
-    static std::vector<TestCaseListToArr> casesListToArr;
+    TestAssist() = default;
+    ~TestAssist();
+    std::string libPath;
+    std::vector<TestCaseMain> casesMain;
+    std::vector<TestCaseListToArr> casesListToArr;
     static founded_sequence *shakeList(founded_sequence *list);
-    static void setCasesListToArr(fs::path &dir);
-    static void setCasesMain(fs::path &dir);
-    static void setTestCases(fs::path dir);
+    void setCasesListToArr(fs::path &dir);
+    void setCasesMain(fs::path &dir);
+    void setTestCases(fs::path dir);
     static sequences_vector getSeqVector(std::string &string);
 };
-
+extern TestAssist testAssist;
 #endif //TP_C_CPP_HW2_UTILS_H

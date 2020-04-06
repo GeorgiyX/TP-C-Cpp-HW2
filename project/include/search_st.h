@@ -6,4 +6,4 @@
 
 sequences_vector *get_vector_from_list(founded_sequence *list);
 
-#endif //TP_C_CPP_HW2_SEARCH_ST_H
+#endif  // TP_C_CPP_HW2_SEARCH_ST_H

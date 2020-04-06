@@ -7,9 +7,6 @@
 #include "search.h"
 
 void free_founded_sequence(founded_sequence *node_to_remove) {
-    if (!node_to_remove) {
-        return;
-    }
     while (node_to_remove) {
         founded_sequence *next_node = node_to_remove->next;
         free(node_to_remove);
@@ -54,10 +51,8 @@ int get_mmap_data(const char *path, char **data, size_t *file_size) {
     if (*data == MAP_FAILED) {
         return -1;
     }
-    
     return close(file_desc);
 }
-
 
 void free_sequences_vector(sequences_vector *vector) {
     if (!vector) {

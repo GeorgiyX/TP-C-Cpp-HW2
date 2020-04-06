@@ -19,7 +19,6 @@ void *thread_routine(void *data) {
             free(new_node);
             return (void *) -1;
         }
-        
         if (!prev_node_mutex.first_node) {
             prev_node_mutex.first_node = new_node;
         } else {

@@ -8,7 +8,7 @@ int write_to_file(const char *path, double data) {
     if (out_file == NULL) {
         return -1;
     }
-    fprintf(out_file, "%f\n", data);
+    fprintf(out_file, "Time: %f\n", data);
     fclose(out_file);
     return 0;
 }

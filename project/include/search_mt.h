@@ -1,7 +1,6 @@
 #ifndef TP_C_CPP_HW2_SEARCH_MT_H
 #define TP_C_CPP_HW2_SEARCH_MT_H
 // Multi Thread inner API
-
 #include <pthread.h>
 #include "search.h"
 
@@ -21,4 +20,4 @@ extern node_mutex prev_node_mutex;
 void *thread_routine(void *data);
 sequences_vector *get_vector_from_list(founded_sequence *list, const char **task_array, size_t task_cnt);
 
-#endif //TP_C_CPP_HW2_SEARCH_MT_H
+#endif  // TP_C_CPP_HW2_SEARCH_MT_H
