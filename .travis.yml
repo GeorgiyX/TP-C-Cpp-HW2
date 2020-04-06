@@ -1,0 +1,22 @@
+dist: bionic
+sudo: required
+language: cpp
+os:
+  - linux
+compiler:
+  - gcc
+install:
+  - source ./scripts/install.sh
+  - source ./scripts/gen_test_data.sh
+
+before_script:
+  - source ./scripts/run.sh
+
+script:
+  - mkdir build-testing
+  - cd build-testing
+  - cmake -DENABLE_COVERAGE=ON -DCMAKE_CXX_COMPILER="g++" ..
+  - cmake --build .
+  - valgrind --tool=memcheck --leak-check=full ./project/testing/tests/testing ../project/testing/data/ ./libsequence_search_dynamic.so
+  - (cd .. && source ./scripts/run_stress.sh)
+  - bash <(curl -s https://codecov.io/bash)

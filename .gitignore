@@ -3,4 +3,11 @@
 .DS_Store
 /project/build/
 /build*
-
+project/testing/data/BIG_DATA/CASE1_A-Za-z0-9.txt
+project/testing/data/BIG_DATA/CASE2_A-La-l0-5.txt
+project/testing/data/BIG_DATA/CASE3_A-La-l0-5.txt
+project/testing/data/BIG_DATA/CASE4_J-zj-z6-9.txt
+task.md
+time-mt.txt
+time-st.txt
+##########
